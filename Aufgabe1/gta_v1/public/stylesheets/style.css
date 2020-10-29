@@ -1,3 +1,11 @@
+/*
+  This solution is strongly opinionated as I have been a web developer for quite a few years now.
+  CSS style is BEM. Classes used for CSS, IDs for JavaScript querying (future use).
+  CSS variables used for clarity and themability (e.g. through SSR). 
+  Inherited box sizing used for ease of including 3rd party content-box components.
+  Grid display used for ease of grid creation (latest standard).
+*/
+
 /* Global styling */
 
 html {
