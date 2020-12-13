@@ -120,23 +120,42 @@ var gtaLocator = (function GtaLocator(geoLocationApi) {
         readme: "Dieses Objekt enthält 'öffentliche' Teile des Moduls.",
 
         updateLocation: function() {
-            const handleSuccess = data => {
-                ["Latitude", "Longitude"].forEach(coordinate => 
-                    ["tagging", "discovery"].forEach(fieldType => 
-                        document
-                            .querySelector(`#${fieldType}${coordinate}`)
-                            .setAttribute("value", data.coords[coordinate.toLowerCase()])
-                    )    
-                )
+            const latitudeFields = ["tagging", "discovery"].map(
+                type => document.querySelector(`#${type}Latitude`)
+            );
 
+            const longitudeFields = ["tagging", "discovery"].map(
+                type => document.querySelector(`#${type}Longitude`)
+            );
+
+            const updateMapImage = (latitude, longitude) => {
                 // Map image
-                const imageUrl = getLocationMapSrc(getLatitude(data), getLongitude(data));
+                const imageUrl = getLocationMapSrc(latitude, longitude);
                 const mapElement = document.querySelector("#mapView");
                 mapElement.setAttribute("src", imageUrl);
             }
 
+            const handleSuccess = data => {
+                const latitude = getLatitude(data);
+                const longitude = getLongitude(data);
+
+                latitudeFields.forEach(field => field.setAttribute("value", latitude));
+                longitudeFields.forEach(field => field.setAttribute("value", longitude));
+
+                updateMapImage(latitude, longitude);
+            }
+
             const handleError = msg => alert(msg);
-            tryLocate(handleSuccess, handleError);
+
+            if ([...latitudeFields, ...longitudeFields].some(field => field.getAttribute("value").length === 0)) {
+                tryLocate(handleSuccess, handleError);
+            } else {
+                // Still need to load the image
+                const latitude = latitudeFields[0].getAttribute("value");
+                const longitude = longitudeFields[0].getAttribute("value");
+
+                updateMapImage(latitude, longitude);
+            }
         }
 
     }; // ... Ende öffentlicher Teil
