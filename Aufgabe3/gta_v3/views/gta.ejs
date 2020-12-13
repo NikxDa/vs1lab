@@ -30,10 +30,10 @@
 						<legend>Add a new GeoTag</legend>
 
 						<label for="taggingLatitude">Latitude:</label>
-						<input type="text" name="latitude" id="taggingLatitude" placeholder="e.g. 10° 30' N" value="<%= locals.latitude || '' %>" required>
+						<input type="text" name="latitude" id="taggingLatitude" placeholder="e.g. 45.0" value="<%= locals.latitude || '' %>" required>
 						
 						<label for="taggingLongitude">Longitude:</label>
-						<input type="text" name="longitude" id="taggingLongitude" placeholder="e.g. 40° 20' W" value="<%= locals.longitude || '' %>" required>
+						<input type="text" name="longitude" id="taggingLongitude" placeholder="e.g. 90.5" value="<%= locals.longitude || '' %>" required>
 
 						<label for="taggingName">Name:</label>
 						<input type="text" name="name" id="taggingName" placeholder="e.g. Central Berlin" required pattern="^[a-zA-Z]+$" maxlength="10">
