@@ -121,22 +121,16 @@ var gtaLocator = (function GtaLocator(geoLocationApi) {
 
         updateLocation: function() {
             const handleSuccess = data => {
-                const latitude = getLatitude(data);
-                const longitude = getLongitude(data);
-
-                const latitudeFields = ["tagging", "discovery"].map(
-                    type => document.querySelector(`#${type}Latitude`)
-                );
-
-                const longitudeFields = ["tagging", "discovery"].map(
-                    type => document.querySelector(`#${type}Longitude`)
-                );
-
-                latitudeFields.forEach(field => field.setAttribute("value", latitude));
-                longitudeFields.forEach(field => field.setAttribute("value", longitude));
+                ["Latitude", "Longitude"].forEach(coordinate => 
+                    ["tagging", "discovery"].forEach(fieldType => 
+                        document
+                            .querySelector(`#${fieldType}${coordinate}`)
+                            .setAttribute("value", data.coords[coordinate.toLowerCase()])
+                    )    
+                )
 
                 // Map image
-                const imageUrl = getLocationMapSrc(latitude, longitude);
+                const imageUrl = getLocationMapSrc(getLatitude(data), getLongitude(data));
                 const mapElement = document.querySelector("#mapView");
                 mapElement.setAttribute("src", imageUrl);
             }
