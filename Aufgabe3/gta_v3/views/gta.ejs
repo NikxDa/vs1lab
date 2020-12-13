@@ -30,10 +30,10 @@
 						<legend>Add a new GeoTag</legend>
 
 						<label for="taggingLatitude">Latitude:</label>
-						<input type="text" name="latitude" id="taggingLatitude" placeholder="e.g. 10° 30' N" required>
+						<input type="text" name="latitude" id="taggingLatitude" placeholder="e.g. 10° 30' N" value="<%= locals.latitude || '' %>" required>
 						
 						<label for="taggingLongitude">Longitude:</label>
-						<input type="text" name="longitude" id="taggingLongitude" placeholder="e.g. 40° 20' W" required>
+						<input type="text" name="longitude" id="taggingLongitude" placeholder="e.g. 40° 20' W" value="<%= locals.longitude || '' %>" required>
 
 						<label for="taggingName">Name:</label>
 						<input type="text" name="name" id="taggingName" placeholder="e.g. Central Berlin" required pattern="^[a-zA-Z]+$" maxlength="10">
@@ -59,8 +59,8 @@
 						<label for="discoverySearch">Search term or keywords:</label>
 						<input type="text" name="searchterm" id="discoverySearch" placeholder="Berlin">
 
-						<input type="hidden" name="latitude" id="discoveryLatitude" value="">
-						<input type="hidden" name="longitude" id="discoveryLongitude" value="">
+						<input type="hidden" name="latitude" id="discoveryLatitude" value="<%= locals.latitude || '' %>">
+						<input type="hidden" name="longitude" id="discoveryLongitude" value="<%= locals.longitude || '' %>">
 	
 						<input type="submit" value="Search">
 					</fieldset>

@@ -152,7 +152,9 @@ app.post('/tagging', function(req, res) {
     state.addGeoTag(tag);
 
     res.render('gta', {
-        taglist: state.geoTags
+        taglist: state.geoTags,
+        latitude: req.body.latitude,
+        longitude: req.body.longitude
     });
 });
 
@@ -183,7 +185,9 @@ app.post('/discovery', function(req, res) {
     }
 
     res.render('gta', {
-        taglist: geoTags
+        taglist: geoTags,
+        latitude: req.body.latitude,
+        longitude: req.body.longitude
     });
 });
 
