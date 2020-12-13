@@ -29,14 +29,54 @@ app.set('view engine', 'ejs');
  * Teste das Ergebnis im Browser unter 'http://localhost:3000/'.
  */
 
-// TODO: CODE ERGÄNZEN
+app.use(express.static("public"));
 
 /**
  * Konstruktor für GeoTag Objekte.
  * GeoTag Objekte sollen min. alle Felder des 'tag-form' Formulars aufnehmen.
  */
 
-// TODO: CODE ERGÄNZEN
+class GeoLocation {
+    constructor(latitude, longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    distanceTo(location) {
+        const toRadians = degrees => degrees * (Math.PI / 180);
+
+        // Convert lat/lng to radians
+        const originLatitude = toRadians(this.latitude);
+        const originLongitude = toRadians(this.longitude);
+
+        const targetLatitude = toRadians(location.latitude);
+        const targetLongitude = toRadians(location.longitude);
+
+        // Use Haversine formula to calculate distance to other locations
+        const deltaLatitude = targetLatitude - originLatitude;
+        const deltaLongitude = targetLongitude - originLongitude;
+
+        let haversine = Math.pow(Math.sin(deltaLatitude / 2), 2) + Math.cos(originLatitude) * Math.cos(targetLatitude) * Math.pow(Math.sin(deltaLongitude / 2), 2);
+        haversine = 2 * Math.asin(Math.sqrt(haversine));
+
+        // Earth radius
+        haversine = haversine * 6371;
+
+        return haversine;
+    }
+
+    get isValid() {
+        return this.latitude >= -90 && this.latitude <= 90 && this.longitude >= -180 && this.longitude <= 180;
+    }
+}
+
+class GeoTag {
+    constructor(name, location, hashtag) {
+        this.name = name;
+        this.location = location;
+        this.hashtag = hashtag;
+    }
+}
 
 /**
  * Modul für 'In-Memory'-Speicherung von GeoTags mit folgenden Komponenten:
@@ -47,7 +87,35 @@ app.set('view engine', 'ejs');
  * - Funktion zum Löschen eines Geo Tags.
  */
 
-// TODO: CODE ERGÄNZEN
+class InMemoryGeoTagState {
+    constructor() {
+        this.geoTags = [];
+    }
+
+    searchGeoTagsByRadius(location, radius) {
+        return this.geoTags.filter(tag => tag.location.distanceTo(location) <= radius);
+    }
+
+    searchGeoTagsByText(text) {
+        return this.geoTags.filter(tag => tag.name.includes(text) || tag.hashtag.includes(text));
+    }
+
+    searchGeoTagsByRadiusAndText(location, radius, text) {
+        return this.geoTags
+            .filter(tag => tag.location.distanceTo(location) <= radius)
+            .filter(tag => tag.name.includes(text) || tag.hashtag.includes(text));
+    }
+
+    addGeoTag(tag) {
+        this.geoTags.push(tag);
+    }
+
+    removeGeoTag(tag) {
+        this.geoTags = this.geoTags.filter(itm => itm.name !== tag.name);
+    }
+}
+
+const state = new InMemoryGeoTagState();
 
 /**
  * Route mit Pfad '/' für HTTP 'GET' Requests.
@@ -77,7 +145,16 @@ app.get('/', function(req, res) {
  * Die Objekte liegen in einem Standard Radius um die Koordinate (lat, lon).
  */
 
-// TODO: CODE ERGÄNZEN START
+app.post('/tagging', function(req, res) {
+    const location = new GeoLocation(req.body.latitude, req.body.longitude);
+    const tag = new GeoTag(req.body.name, location, req.body.hashtag);
+
+    state.addGeoTag(tag);
+
+    res.render('gta', {
+        taglist: state.geoTags
+    });
+});
 
 /**
  * Route mit Pfad '/discovery' für HTTP 'POST' Requests.
@@ -91,7 +168,24 @@ app.get('/', function(req, res) {
  * Falls 'term' vorhanden ist, wird nach Suchwort gefiltert.
  */
 
-// TODO: CODE ERGÄNZEN
+app.post('/discovery', function(req, res) {
+    const location = new GeoLocation(req.body.latitude, req.body.longitude);
+    const defaultRadius = 10;
+
+    let geoTags = [];
+
+    if (location.isValid && req.body.searchterm) {
+        geoTags = state.searchGeoTagsByRadiusAndText(location, defaultRadius, req.body.searchterm);
+    } else if (location.isValid) {
+        geoTags = state.searchGeoTagsByRadius(location, defaultRadius);
+    } else if (req.body.searchterm) {
+        geoTags = state.searchGeoTagsByText(req.body.searchterm);
+    }
+
+    res.render('gta', {
+        taglist: geoTags
+    });
+});
 
 /**
  * Setze Port und speichere in Express.
