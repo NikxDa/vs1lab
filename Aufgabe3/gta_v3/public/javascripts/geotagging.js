@@ -103,7 +103,7 @@ var gtaLocator = (function GtaLocator(geoLocationApi) {
 
         var tagList = "&pois=You," + lat + "," + lon;
         if (tags !== undefined) tags.forEach(function(tag) {
-            tagList += "|" + tag.name + "," + tag.latitude + "," + tag.longitude;
+            tagList += "|" + tag.name + "," + tag.location.latitude + "," + tag.location.longitude;
         });
 
         var urlString = "https://www.mapquestapi.com/staticmap/v4/getmap?key=" +
@@ -130,8 +130,8 @@ var gtaLocator = (function GtaLocator(geoLocationApi) {
 
             const updateMapImage = (latitude, longitude) => {
                 // Map image
-                const imageUrl = getLocationMapSrc(latitude, longitude);
                 const mapElement = document.querySelector("#mapView");
+                const imageUrl = getLocationMapSrc(latitude, longitude, JSON.parse(mapElement.getAttribute("data-tags")), 6);
                 mapElement.setAttribute("src", imageUrl);
             }
 

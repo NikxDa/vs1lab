@@ -128,7 +128,8 @@ const state = new InMemoryGeoTagState();
 
 app.get('/', function(req, res) {
     res.render('gta', {
-        taglist: []
+        taglist: state.geoTags,
+        taglistJson: JSON.stringify(state.geoTags)
     });
 });
 
@@ -153,6 +154,7 @@ app.post('/tagging', function(req, res) {
 
     res.render('gta', {
         taglist: state.geoTags,
+        taglistJson: JSON.stringify(state.geoTags),
         latitude: req.body.latitude,
         longitude: req.body.longitude
     });
@@ -186,6 +188,7 @@ app.post('/discovery', function(req, res) {
 
     res.render('gta', {
         taglist: geoTags,
+        taglistJson: JSON.stringify(state.geoTags),
         latitude: req.body.latitude,
         longitude: req.body.longitude
     });
