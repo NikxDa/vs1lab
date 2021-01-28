@@ -151,6 +151,19 @@ const handleDiscoveryClear = async evt => {
     return false;
 }
 
+const handleDelete = async e => {
+    const element = e.target;
+    const id = element.getAttribute("data-id");
+
+    if (id && confirm("Are you sure you want to delete this event?")) {
+        await API.deleteGeoTag(id);
+        element.parentNode.removeChild(element);
+    }
+}
+
+// Add delete listeners
+document.querySelectorAll(".discovery__results li").forEach(el => el.addEventListener("click", handleDelete));
+
 taggingForm.onsubmit = handleTaggingFormSubmit;
 discoveryForm.onsubmit = handleDiscoveryFormSubmit;
 discoveryClear.onclick = handleDiscoveryClear;
@@ -158,6 +171,9 @@ discoveryClear.onclick = handleDiscoveryClear;
 const createHTMLGeoTag = data => {
     const listItem = document.createElement("li");
     listItem.textContent = `${data.name} (${data.latitude || data.location.latitude},${data.longitude || data.location.longitude}) ${data.hashtag}`;
+    listItem.setAttribute("data-id", data.id);
+
+    listItem.addEventListener("click", handleDelete);
 
     const resultList = document.querySelector("#discoveryResults");
     resultList.appendChild(listItem);
