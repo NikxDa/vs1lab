@@ -54,7 +54,7 @@ fieldset:not(:last-child) {
   margin-bottom: 1rem;
 }
 
-label, input {
+label, input, button {
   display: block;
 }
 
@@ -63,16 +63,18 @@ label {
   color: var(--gray-color);
 }
 
-input {
+input, button {
   padding: 0 .5rem;
   line-height: 2rem;
 }
 
-input:not(:last-child) {
+input:not(:last-child),
+button:not(:last-child) {
   margin-bottom: 1rem;
 }
 
-input[type="submit"] {
+input[type="submit"],
+button {
   display: block;
   appearance: none;
   background-color: var(--background-color);
@@ -81,7 +83,8 @@ input[type="submit"] {
   cursor: pointer;
 }
 
-input[type="submit"]:hover {
+input[type="submit"]:hover,
+button:hover {
   background-color: var(--border-color);
 }
 
@@ -172,6 +175,14 @@ input[type="submit"]:hover {
 
 .discovery__results li:not(:first-child) {
   margin-top: 1rem;
+}
+
+.discovery__clear {
+  display: none;
+}
+
+.discovery__clear.discovery__clear--active {
+  display: block;
 }
 
 /* Footer Component */

@@ -171,6 +171,8 @@ app.get("/api/geotags", (req, res) => {
         geoTags = state.searchGeoTagsByRadius(location, defaultRadius);
     } else if (req.query.searchterm) {
         geoTags = state.searchGeoTagsByText(req.query.searchterm);
+    } else {
+        geoTags = state.geoTags
     }
 
     return res.json(geoTags);

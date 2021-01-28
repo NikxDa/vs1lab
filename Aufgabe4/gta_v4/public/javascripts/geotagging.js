@@ -61,8 +61,8 @@ class API {
         return this.#sendRequest("/api/geotags", "POST", JSON.stringify(data));
     }
 
-    static getGeoTags(data = {}) {
-        let url = `/api/geotags?${new URLSearchParams(data).toString()}`;
+    static getGeoTags(data = null) {
+        let url = `/api/geotags?${data ? new URLSearchParams(data).toString() : ""}`;
         return this.#sendRequest(url);
     }
 
@@ -81,6 +81,7 @@ class API {
 
 const taggingForm = document.querySelector("#taggingForm");
 const discoveryForm = document.querySelector("#discoveryFilterForm");
+const discoveryClear = document.querySelector(".discovery__clear");
 
 const handleTaggingFormSubmit = async evt => {
     evt.preventDefault();
@@ -131,11 +132,28 @@ const handleDiscoveryFormSubmit = async evt => {
         createHTMLGeoTag(item);
     }
 
+    discoveryClear.classList.add("discovery__clear--active");
+    return false;
+}
+
+const handleDiscoveryClear = async evt => {
+    evt.preventDefault();
+
+    discoveryClear.classList.remove("discovery__clear--active");
+    const responseData = await API.getGeoTags();
+    const resultList = document.querySelector("#discoveryResults");
+    resultList.innerHTML = "";
+
+    for(let item of responseData) {
+        createHTMLGeoTag(item);
+    }
+
     return false;
 }
 
 taggingForm.onsubmit = handleTaggingFormSubmit;
 discoveryForm.onsubmit = handleDiscoveryFormSubmit;
+discoveryClear.onclick = handleDiscoveryClear;
 
 const createHTMLGeoTag = data => {
     const listItem = document.createElement("li");
