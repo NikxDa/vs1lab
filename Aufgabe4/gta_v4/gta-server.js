@@ -175,7 +175,13 @@ app.get("/api/geotags", (req, res) => {
         geoTags = state.geoTags
     }
 
-    return res.json(geoTags);
+    const offset = req.query.offset || 0;
+    const count = req.query.count || 10;
+
+    return res.json({
+        items: geoTags.slice(offset, offset + count),
+        totalItemCount: geoTags.length
+    });
 })
 
 app.post("/api/geotags", (req, res) => {
@@ -184,7 +190,10 @@ app.post("/api/geotags", (req, res) => {
 
     state.addGeoTag(tag);
 
-    return res.json(state.geoTags);
+    return res.json({
+        items: state.geoTags,
+        totalItemCount: state.geoTags.length
+    });
 })
 
 app.get("/api/geotags/:id", (req, res) => {
@@ -200,7 +209,10 @@ app.put("/api/geotags/:id", (req, res) => {
 
 app.delete("/api/geotags/:id", (req, res) => {
     state.deleteTagById(req.params.id);
-    return res.json(state.geoTags);
+    return res.json({
+        items: state.geoTags,
+        totalItemCount: state.geoTags.length
+    });
 })
 
 /**

@@ -70,11 +70,14 @@
 
 				<div class="discovery__wrapper">
 					<div class="discovery__taglist">
-						<ul class="discovery__results" id="discoveryResults">
-							<% if (taglist !== undefined) taglist.forEach(function(gtag) { %>
-								<li data-id="<%= gtag.id %>"><%= gtag.name %> (<%= gtag.location.latitude %>,<%= gtag.location.longitude %>) <%= gtag.hashtag %> </li>
-							<% }); %>
-						</ul>
+						<div class="discovery__results" id="discoveryResults">
+							<ul class="discovery__list"></ul>
+							<ul class="discovery__pagination">
+								<button id="paginationPrev">Previous</button>
+								<span id="paginationCurrent">Page 1 of #</span>
+								<button id="paginationNext">Next</button>
+							</ul>
+						</div>
 					</div>
 	
 					<div class="discovery__map">

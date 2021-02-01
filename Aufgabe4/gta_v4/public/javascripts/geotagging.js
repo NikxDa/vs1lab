@@ -61,8 +61,8 @@ class API {
         return this.#sendRequest("/api/geotags", "POST", JSON.stringify(data));
     }
 
-    static getGeoTags(data = null) {
-        let url = `/api/geotags?${data ? new URLSearchParams(data).toString() : ""}`;
+    static getGeoTags(data = null, offset = 0, count = 10) {
+        let url = `/api/geotags?${data ? new URLSearchParams(data).toString() : ""}&offset=${offset}&count=${count}`;
         return this.#sendRequest(url);
     }
 
@@ -104,7 +104,7 @@ const handleTaggingFormSubmit = async evt => {
     mapElement.setAttribute("data-tags", JSON.stringify(responseData));
     gtaLocator.updateLocation();
 
-    createHTMLGeoTag(data);
+    await loadTagList(true);
 
     return false;
 }
@@ -124,29 +124,112 @@ const handleDiscoveryFormSubmit = async evt => {
         currentValue = iterator.next();
     }
 
-    const responseData = await API.getGeoTags(data);
-    const resultList = document.querySelector("#discoveryResults");
-    resultList.innerHTML = "";
-
-    for(let item of responseData) {
-        createHTMLGeoTag(item);
-    }
+    setFilter(data);
+    await loadTagList();
 
     discoveryClear.classList.add("discovery__clear--active");
     return false;
+}
+
+let currentPage = 1;
+let itemsPerPage = 10;
+let loadedTags = [];
+let totalItemCount = null;
+let currentFilter = null;
+
+const setFilter = newFilter => {
+    currentFilter = newFilter;
+    loadedTags = [];
+    currentPage = 1;
+    totalItemCount = null;
+}
+
+const loadTagList = async (forceReload = false) => {
+    if ((loadedTags.length < currentPage * itemsPerPage && loadedTags.length < totalItemCount) || totalItemCount === null || forceReload) {
+        const responseData = await API.getGeoTags(currentFilter, (currentPage - 1) * itemsPerPage, itemsPerPage);
+        totalItemCount = responseData.totalItemCount;
+    
+        for (let item of responseData.items) {
+            if (!loadedTags.find(itm => itm.id === item.id)) {
+                loadedTags.push(item);
+            }
+        }
+    }
+
+    renderTagList();
+}
+
+const renderTagList = () => {
+    const resultWrapper = document.querySelector("#discoveryResults");
+
+    const resultList = resultWrapper.querySelector(".discovery__list");
+    resultList.innerHTML = "";
+
+    const createHTMLGeoTag = data => {
+        const listItem = document.createElement("li");
+        listItem.textContent = `${data.name} (${data.latitude || data.location.latitude},${data.longitude || data.location.longitude}) ${data.hashtag}`;
+        listItem.setAttribute("data-id", data.id);
+    
+        listItem.addEventListener("click", handleDelete);
+        resultList.appendChild(listItem);
+    }
+
+    const activeOffset = (currentPage - 1) * itemsPerPage;
+    for (let item of loadedTags.slice(activeOffset, activeOffset + itemsPerPage)) {
+        createHTMLGeoTag(item);
+    }
+
+    updatePagination();
+}
+
+const nextPage = () => {
+    if (totalItemCount !== null && currentPage * itemsPerPage < totalItemCount) {
+        currentPage++;
+        loadTagList();
+    }
+}
+
+const previousPage = () => {
+    if (totalItemCount !== null && currentPage > 1) {
+        currentPage--;
+        loadTagList();
+    }
+}
+
+const paginationNext = document.querySelector("#paginationNext");
+const paginationPrev = document.querySelector("#paginationPrev");
+const paginationCurrent = document.querySelector("#paginationCurrent");
+
+paginationNext.onclick = nextPage;
+paginationPrev.onclick = previousPage;
+
+const updatePagination = () => {
+    if (totalItemCount !== null && currentPage === 1) {
+        paginationPrev.setAttribute("disabled", true);
+    } else {
+        paginationPrev.removeAttribute("disabled");
+    }
+
+    if (totalItemCount !== null && currentPage * itemsPerPage >= totalItemCount) {
+        paginationNext.setAttribute("disabled", true);
+    } else {
+        paginationNext.removeAttribute("disabled");
+    }
+
+    if (totalItemCount === null) {
+        paginationCurrent.textContent = "Loading...";
+    } else {
+        paginationCurrent.textContent = `Page ${currentPage} of ${Math.ceil(totalItemCount / itemsPerPage)}`;
+    }
 }
 
 const handleDiscoveryClear = async evt => {
     evt.preventDefault();
 
     discoveryClear.classList.remove("discovery__clear--active");
-    const responseData = await API.getGeoTags();
-    const resultList = document.querySelector("#discoveryResults");
-    resultList.innerHTML = "";
+    currentFilter = null;
 
-    for(let item of responseData) {
-        createHTMLGeoTag(item);
-    }
+    loadTagList();
 
     return false;
 }
@@ -168,16 +251,7 @@ taggingForm.onsubmit = handleTaggingFormSubmit;
 discoveryForm.onsubmit = handleDiscoveryFormSubmit;
 discoveryClear.onclick = handleDiscoveryClear;
 
-const createHTMLGeoTag = data => {
-    const listItem = document.createElement("li");
-    listItem.textContent = `${data.name} (${data.latitude || data.location.latitude},${data.longitude || data.location.longitude}) ${data.hashtag}`;
-    listItem.setAttribute("data-id", data.id);
-
-    listItem.addEventListener("click", handleDelete);
-
-    const resultList = document.querySelector("#discoveryResults");
-    resultList.appendChild(listItem);
-}
+loadTagList();
 
 /**
  * GeoTagApp Locator Modul

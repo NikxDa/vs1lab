@@ -161,11 +161,24 @@ button:hover {
   color: var(--gray-color);
 }
 
-.discovery__results {
+.discovery__pagination {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  align-items: center;
+}
+
+.discovery__pagination button {
+  margin: 0;
+}
+
+.discovery__list {
   list-style-type: none;
 }
 
-.discovery__results li {
+.discovery__list li {
   padding: 1rem .75rem;
   background-color: var(--background-color);
   color: var(--link-color);
@@ -173,7 +186,7 @@ button:hover {
   cursor: pointer;
 }
 
-.discovery__results li:not(:first-child) {
+.discovery__list li:not(:first-child) {
   margin-top: 1rem;
 }
 
