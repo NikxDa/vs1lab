@@ -227,9 +227,12 @@ const handleDiscoveryClear = async evt => {
     evt.preventDefault();
 
     discoveryClear.classList.remove("discovery__clear--active");
-    currentFilter = null;
+    setFilter(null);
 
-    loadTagList();
+    loadTagList(true);
+
+    const searchField = document.querySelector("#discoverySearch");
+    searchField.value = "";
 
     return false;
 }

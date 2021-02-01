@@ -36,10 +36,10 @@
 						<input type="text" name="longitude" id="taggingLongitude" placeholder="e.g. 90.5" value="<%= locals.longitude || '' %>" required>
 
 						<label for="taggingName">Name:</label>
-						<input type="text" name="name" id="taggingName" placeholder="e.g. Central Berlin" required pattern="^[a-zA-Z]+$" maxlength="10">
+						<input type="text" name="name" id="taggingName" placeholder="e.g. Central Berlin" required pattern="^[a-zA-Z0-9]+$" maxlength="10">
 	
 						<label for="taggingHashtag">Hashtag:</label>
-						<input type="text" name="hashtag" id="taggingHashtag" placeholder="e.g. #ber" pattern="^#[a-zA-Z]{1,10}$">
+						<input type="text" name="hashtag" id="taggingHashtag" placeholder="e.g. #ber" pattern="^#[a-zA-Z0-9]{1,10}$">
 
 						<input type="submit" value="Add Tag">
 					</fieldset>
