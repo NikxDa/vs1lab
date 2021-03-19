@@ -23,6 +23,8 @@ GeoTags, die wie folgt umgesetzt werden:
   angezeigt. GeoTags der Umgebung können zudem über Name oder Hashtag gefiltert
   werden.
 
+Test
+
 ![Screenshot](gta-screen.png)
 
 ## Entwicklungsumgebung
